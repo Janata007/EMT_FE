@@ -1,7 +1,6 @@
 import "./App.css";
 
 import { Component, useEffect, useState } from "react";
-import { render } from "react-dom";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { Container } from "react-bootstrap";
 import ELibraryService from "../../repository/elibraryRepository";
@@ -16,65 +15,29 @@ const App = () => {
     categories: [],
     books: [],
   });
-
-  const loadAuthors = () => {
-    ELibraryService.fetchAuthors().then((data) => {
+const [page, setPage] = useState(1);
+  const loadEverything = async () => {
+    const authors = await ELibraryService.fetchAuthors();
+    const categories = await ELibraryService.fetchCategories();
+    const books = await ELibraryService.bookPagination(page);
+    console.log('foiwfewo')
+    if (authors && categories && books)
       setBookState({
-        ...bookState,
-        authors: data.data,
+        categories: categories.data,
+        authors: authors.data,
+        books: { data: books.data.content, totalElements: books.data.totalElements},
       });
-    });
-  };
-  const loadCategories = () => {
-    ELibraryService.fetchCategories().then((data) => {
-      setBookState({
-        ...bookState,
-
-        categories: data.data,
-      });
-    });
-  };
-  const loadBooks = () => {
-    ELibraryService.fetchBooks().then((data) => {
-      setBookState({
-        // books: data.data,
-        books: [
-          {
-            name: "nesto",
-            category: "aaa",
-            author: "big oigngeonre",
-            copies: 123,
-            id: 1,
-          },
-          {
-            name: "nesto",
-            category: "aaa",
-            author: "big oigngeonre",
-            copies: 123,
-            id: 1,
-          },
-          {
-            name: "nesto",
-            category: "aaa",
-            author: "big oigngeonre",
-            copies: 123,
-            id: 1,
-          },
-        ],
-      });
-    });
   };
   useEffect(() => {
-    loadAuthors();
-    loadCategories();
-    loadBooks();
-  }, []);
+    loadEverything();
+  }, [page]);
+
   return (
     <Container>
       <Navbar />
       <Router>
         <Routes>
-          <Route path={"/"} exact element={<Books books={bookState.books} />} />
+          <Route path={"/"} exact element={<Books books={bookState.books} authors={bookState.authors} categories={bookState.categories} />} />
           <Route
             path={"/authors"}
             exact
@@ -86,9 +49,9 @@ const App = () => {
             element={<Categories categories={bookState.categories} />}
           />
           <Route
-            path={"/books"}
+            path={`/books`}
             exact
-            element={<Books books={bookState.books} />}
+            element={<Books loadEverything={loadEverything} books={bookState.books} authors={bookState.authors} categories={bookState.categories} changePage={(currPage)=>setPage(currPage)} page={page} />}
           />
         </Routes>
       </Router>

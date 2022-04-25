@@ -1,30 +1,23 @@
 import React from "react";
+import { Card } from "react-bootstrap";
+import { Button, Row } from "react-bootstrap";
 
-const categories = (props) =>{
+const categories = ({ categories }) =>{
     return (
-        <div className= {"container mm-4 mt-5"}>
-            <div classname={"row"}>
-                <div classname={"row"}>
-                    <table className={"table table-striped"}>
-                        <thead>
-                            <tr>
-                                <th scope={"col"}>Name</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {props.categories.map((term)=> {
-                                return(
-                                    <tr>
-                                        <td>{term.name}</td>
-                                    </tr>
-                                );
-                            })}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    );
-}
-
+        <Row>
+          {categories.map((term ) => {
+            return (
+              <Card style={{ width: "30%" }} key={term}>
+                <Card.Body>
+                  <Card.Title>{term}</Card.Title>
+                  <div className="flex">
+                    {/* <Button variant="primary" onClick={()=>null}>Delete</Button> */}
+                  </div>
+                </Card.Body>
+              </Card>
+            );
+          })}
+     </Row>
+      );
+};
 export default categories;

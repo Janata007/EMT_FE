@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import { Modal, Button, Form } from "react-bootstrap";
 import ELibraryService from "../../repository/elibraryRepository";
 
-const EditModal = ({ show, handleClose }) => {
+const EditModal = ({
+  show,
+  handleClose,
+  variant,
+  categories,
+  authors,
+  loadEverything,
+}) => {
   const [formValues, setFormValues] = useState({});
   const changeValue = (element) => {
     console.log(element.target);
@@ -11,7 +18,6 @@ const EditModal = ({ show, handleClose }) => {
       [element.target.id]: element.target.value,
     });
   };
-
   return (
     <Modal show={Boolean(show)} onHide={handleClose}>
       <Modal.Header closeButton>
@@ -32,21 +38,25 @@ const EditModal = ({ show, handleClose }) => {
 
           <Form.Group className="mb-3" controlId="category">
             <Form.Label>Category</Form.Label>
-            <Form.Control
-              type="text"
+            <Form.Select
               defaultValue={show && show.category}
-              placeholder="Enter Category"
               onChange={(e) => changeValue(e)}
-            />
+            >
+              {categories.map((e) => (
+                <option value={e}>{e}</option>
+              ))}
+            </Form.Select>
           </Form.Group>
           <Form.Group className="mb-3" controlId="author">
             <Form.Label>Author</Form.Label>
-            <Form.Control
-              type="text"
-              defaultValue={show && show.author}
-              placeholder="Enter Author"
+            <Form.Select
+              defaultValue={show && show.author && show.author.id}
               onChange={(e) => changeValue(e)}
-            />
+            >
+              {authors.map((e) => (
+                <option value={e.id}>{e.name}</option>
+              ))}
+            </Form.Select>
           </Form.Group>
           <Form.Group className="mb-3" controlId="copies">
             <Form.Label>Copies</Form.Label>
@@ -63,7 +73,19 @@ const EditModal = ({ show, handleClose }) => {
       <Modal.Footer>
         <Button
           variant="primary"
-          onClick={() => ELibraryService.editBook(show, formValues)}
+          onClick={
+            variant === "create"
+              ? () => {
+                  loadEverything();
+                  handleClose();
+                  ELibraryService.createBook(formValues);
+                }
+              : () => {
+                  loadEverything();
+                  handleClose();
+                  ELibraryService.editBook(show, formValues);
+                }
+          }
         >
           Save changes
         </Button>
